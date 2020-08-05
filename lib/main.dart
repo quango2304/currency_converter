@@ -27,8 +27,9 @@ class _MyAppState extends State<MyApp> {
       builder: (context, constrain) {
         AppSizes().init(constrain);
         return MaterialApp(
-          home: CountriesPicker()
-//          home: Home(),
+          debugShowCheckedModeBanner: false,
+//          home: CountriesPicker()
+          home: Home(),
         );
       },
     );

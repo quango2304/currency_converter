@@ -25,6 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   scaledownbutton: ^0.0.2
   country_icons: ^1.1.1
+  clipboard_manager: ^0.0.4
 
 dev_dependencies:
   flutter_test:
@@ -44,8 +45,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-  - header.jpg
-  - header2.jpg
   - countries.json
 
 

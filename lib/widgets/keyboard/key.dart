@@ -5,8 +5,9 @@ import 'package:scaledownbutton/scaledownbutton.dart';
 class KeyboardButton extends StatefulWidget {
   final Widget child;
   final Function ontap;
+  final Function onLongPress;
 
-  const KeyboardButton({Key key, this.child, this.ontap}) : super(key: key);
+  const KeyboardButton({Key key, this.child, this.ontap, this.onLongPress}) : super(key: key);
 
   @override
   _KeyboardButtonState createState() => _KeyboardButtonState();
@@ -23,6 +24,11 @@ class _KeyboardButtonState extends State<KeyboardButton> {
       child: Container(
         child: Material(
           child: InkWell(
+            onLongPress: () {
+              if(widget.onLongPress!=null) {
+                widget.onLongPress();
+              }
+            },
             onTap: () {
               if(widget.ontap!=null) {
                 widget.ontap();
