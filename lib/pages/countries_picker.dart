@@ -41,26 +41,26 @@ class _CountriesPickerState extends State<CountriesPicker> {
                       ),
                 Container(
                   padding: EdgeInsets.symmetric(vertical: AppSizes.hUnit * 2),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: Image.asset(
-                            'icons/flags/png/${country.isoCode.toLowerCase()}.png',
-                            package: 'country_icons',
-                            fit: BoxFit.fitWidth,
-                            width: AppSizes.wUnit * 10,
-                          ),
+                  width: AppSizes.wUnit * 80,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Image.asset(
+                          'icons/flags/png/${country.isoCode.toLowerCase()}.png',
+                          package: 'country_icons',
+                          fit: BoxFit.fitWidth,
+                          width: AppSizes.wUnit * 10,
                         ),
-                        SizedBox(
-                          width: AppSizes.wUnit * 2,
-                        ),
-                        Text(country.name)
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        width: AppSizes.wUnit * 2,
+                      ),
+                      Expanded(
+                          child: Text(country.name, overflow: TextOverflow.ellipsis,)),
+                      Text(country.currencyCode),
+                    ],
                   ),
                 ),
               ],
@@ -73,7 +73,8 @@ class _CountriesPickerState extends State<CountriesPicker> {
 
   Widget buildCharacterCountry(String character, List<Country> localCountries) {
     List<Country> filteredCountries = localCountries
-        .where((country) => AppUtils.toNormal(country.name.substring(0, 1) )== character)
+        .where((country) =>
+            AppUtils.toNormal(country.name.substring(0, 1)) == character)
         .toList();
     if (filteredCountries.length == 0)
       return SizedBox(
@@ -120,8 +121,13 @@ class _CountriesPickerState extends State<CountriesPicker> {
     List<Country> localCountries;
     if (searchText != '' && searchText != null) {
       localCountries = countryList
-          .where((country) =>
-              country.name.replaceAll(' ', '').toLowerCase().contains(searchText.replaceAll(' ', '').toLowerCase()))
+          .where((country) => (country.name
+          .replaceAll(' ', '')
+          .toLowerCase()
+          .contains(searchText.replaceAll(' ', '').toLowerCase())||country.currencyCode
+          .replaceAll(' ', '')
+          .toLowerCase()
+          .contains(searchText.replaceAll(' ', '').toLowerCase())))
           .toList();
     } else {
       localCountries = countryList;
@@ -185,9 +191,11 @@ class _CountriesPickerState extends State<CountriesPicker> {
                       contentPadding: EdgeInsets.only(
                           left: 15, bottom: 11, top: 11, right: 15),
                       hintStyle: TextStyle(color: Colors.grey),
-                      hintText: "Search Country")),
+                      hintText: "Search country, currency")),
             ),
-            SizedBox(height: AppSizes.hUnit*3,),
+            SizedBox(
+              height: AppSizes.hUnit * 3,
+            ),
             Expanded(
 //              child: SingleChildScrollView(
 //                child: Column(
@@ -199,7 +207,7 @@ class _CountriesPickerState extends State<CountriesPicker> {
                 context: context,
                 removeTop: true,
                 child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
+                    physics: BouncingScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: countriesAlpha.length,
                     itemBuilder: (context, index) => buildCharacterCountry(

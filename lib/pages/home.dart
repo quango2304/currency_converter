@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:currency_converter/models/app_sizes.dart';
 import 'package:currency_converter/models/country.dart';
+import 'package:currency_converter/models/currency_rates.dart';
 import 'package:currency_converter/pages/countries_picker.dart';
 import 'package:currency_converter/util.dart';
 import 'package:currency_converter/widgets/clipper.dart';
@@ -16,6 +19,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<String> currencies = ['', ''];
+  CurrencyRates _currencyRates;
+  bool isPressConvert = false;
   Country fromCountry = Country(
     isoCode: "US",
     currencyCode: "USD",
@@ -31,6 +36,35 @@ class _HomeState extends State<Home> {
     iso3Code: "VNM",
   );
   bool isNavigated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadCurrency();
+  }
+
+  Future<void> loadCurrency() async {
+    CurrencyRates result = await AppUtils.loadCurrencyRates();
+    print(result.toJson());
+    setState(() {
+      _currencyRates = result;
+    });
+  }
+
+  void convert() {
+    try {
+      double from = double.parse(currencies[0]);
+      double rateFrom = _currencyRates.rates[fromCountry.currencyCode];
+      double rateTo = _currencyRates.rates[toCountry.currencyCode];
+      double to = from*(rateTo/rateFrom);
+      setState(() {
+        to = (to * 1000).ceil() / 1000;
+        currencies[1] = to.toString();
+      });
+    } catch (e){
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +123,17 @@ class _HomeState extends State<Home> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             ScaleDownButton(
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  Country temp = fromCountry;
+                                  fromCountry = toCountry;
+                                  toCountry = temp;
+
+                                  String temp2 = currencies[0];
+                                  currencies[0] = currencies[1];
+                                  currencies[1] = temp2;
+                                });
+                              },
                               child: Icon(
                                 Icons.swap_vert,
                                 size: AppSizes.hUnit * 4,
@@ -115,30 +159,40 @@ class _HomeState extends State<Home> {
                   top: AppSizes.hUnit * 42,
                   child: ScaleDownButton(
                     scale: 0.05,
-                    onTap: () {},
+                    onTap: () {
+                      isPressConvert = true;
+                      convert();
+                    },
                     child: Container(
-                      alignment: Alignment.center,
-                      width: AppSizes.wUnit * 30,
-                      height: AppSizes.hUnit * 5,
-                      decoration: BoxDecoration(
-                          color: Colors.lightBlue.withOpacity(0.95),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blue.withOpacity(0.2),
-                              spreadRadius: 5,
-                              blurRadius: 5,
-                              offset:
-                                  Offset(0, 3), // changes position of shadow
-                            )
-                          ]),
-                      child: Text(
-                        "CONVERT",
-                        style: TextStyle(
-                            fontSize: AppSizes.wUnit * 3.5,
-                            color: Colors.white),
-                      ),
-                    ),
+                        alignment: Alignment.center,
+                        width: AppSizes.wUnit * 30,
+                        height: AppSizes.hUnit * 5,
+                        decoration: BoxDecoration(
+                            color: Colors.lightBlue.withOpacity(0.95),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blue.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 5,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
+                              )
+                            ]),
+                        child: _currencyRates == null
+                            ? Container(
+                                width: AppSizes.wUnit * 5,
+                                height: AppSizes.wUnit * 5,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  backgroundColor: Colors.white,
+                                ))
+                            : Text(
+                                "CONVERT",
+                                style: TextStyle(
+                                    fontSize: AppSizes.wUnit * 3.5,
+                                    color: Colors.white),
+                              )),
                   ),
                 )
               ],
@@ -161,14 +215,16 @@ class _HomeState extends State<Home> {
               isNavigated = true;
               Country result = await Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => CountriesPicker()));
-              if(index==0) {
-                setState(() {
-                  fromCountry = result;
-                });
-              } else {
-                setState(() {
-                  toCountry = result;
-                });
+              if (result != null) {
+                if (index == 0) {
+                  setState(() {
+                    fromCountry = result;
+                  });
+                } else {
+                  setState(() {
+                    toCountry = result;
+                  });
+                }
               }
               isNavigated = false;
             }
@@ -202,7 +258,7 @@ class _HomeState extends State<Home> {
                 color: Colors.transparent,
               ),
               Text(
-                index == 0 ? fromCountry.currencyCode: toCountry.currencyCode,
+                index == 0 ? fromCountry.currencyCode : toCountry.currencyCode,
                 style:
                     TextStyle(fontSize: AppSizes.wUnit * 5, color: Colors.blue),
               ),
@@ -257,6 +313,21 @@ class _HomeState extends State<Home> {
     );
   }
 
+  void pressKey(String key) {
+    if(isPressConvert == true) {
+      setState(() {
+        currencies[0] = '';
+        currencies[1] = '';
+        currencies[0] += key;
+        isPressConvert = false;
+      });
+    } else {
+      setState(() {
+        currencies[0] += key;
+      });
+    }
+  }
+
   Column buildKeyBoard() {
     TextStyle buttonStyle = TextStyle(fontSize: AppSizes.wUnit * 5);
     return Column(
@@ -267,9 +338,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '7';
-                });
+                pressKey('7');
               },
               child: Text(
                 '7',
@@ -278,9 +347,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '8';
-                });
+                pressKey('8');
               },
               child: Text(
                 '8',
@@ -289,9 +356,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '9';
-                });
+                pressKey('9');
               },
               child: Text(
                 '9',
@@ -305,9 +370,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '4';
-                });
+                pressKey('4');
               },
               child: Text(
                 '4',
@@ -316,9 +379,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '5';
-                });
+                pressKey('5');
               },
               child: Text(
                 '5',
@@ -327,9 +388,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '6';
-                });
+                pressKey('6');
               },
               child: Text(
                 '6',
@@ -343,9 +402,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '1';
-                });
+                pressKey('1');
               },
               child: Text(
                 '1',
@@ -354,9 +411,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '2';
-                });
+                pressKey('2');
               },
               child: Text(
                 '2',
@@ -365,9 +420,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '3';
-                });
+                pressKey('3');
               },
               child: Text(
                 '3',
@@ -381,9 +434,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '0';
-                });
+                pressKey('0');
               },
               child: Text(
                 '0',
@@ -392,9 +443,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                setState(() {
-                  currencies[0] += '.';
-                });
+                pressKey('.');
               },
               child: Text(
                 '.',
@@ -413,6 +462,7 @@ class _HomeState extends State<Home> {
               onLongPress: () {
                 setState(() {
                   currencies[0] = '';
+                  currencies[1] = '';
                 });
               },
               child: Icon(

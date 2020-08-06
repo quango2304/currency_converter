@@ -1011,7 +1011,7 @@ final List<Country> countryList = [
   ),
   Country(
     isoCode: "FM",
-    currencyCode: "None",
+    currencyCode: "USD",
     currencyName: "[D]",
     name: "Micronesia (Federated States of)",
     iso3Code: "FSM",
