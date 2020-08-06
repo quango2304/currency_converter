@@ -179,6 +179,7 @@ class _CountriesPickerState extends State<CountriesPicker> {
                   ]),
               child: Center(
                 child: TextField(
+                    autofocus:true,
                     textAlign: TextAlign.left,
                     onChanged: (text) {
                       setState(() {
