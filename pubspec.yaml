@@ -28,6 +28,7 @@ dependencies:
   clipboard_manager: ^0.0.4
   dio: ^3.0.9
   shared_preferences: ^0.5.8
+  google_fonts: ^1.1.0
 
 dev_dependencies:
   flutter_test:

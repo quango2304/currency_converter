@@ -11,6 +11,7 @@ import 'package:currency_converter/widgets/clipper.dart';
 import 'package:currency_converter/widgets/keyboard/key.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:scaledownbutton/scaledownbutton.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -54,7 +55,6 @@ class _HomeState extends State<Home> {
     setState(() {
       if (fromCountryCache != null) {
         fromCountry = Country.fromRawJson(fromCountryCache);
-
       }
       if (toCountryCache != null) {
         toCountry = Country.fromRawJson(toCountryCache);
@@ -76,21 +76,23 @@ class _HomeState extends State<Home> {
   }
 
   void convert(BuildContext context) {
-    try {
-      double from = double.parse(currencies[0]);
-      double rateFrom = _currencyRates.rates[fromCountry.currencyCode];
-      double rateTo = _currencyRates.rates[toCountry.currencyCode];
-      double to = from * (rateTo / rateFrom);
-      setState(() {
-        to = (to * 1000).ceil() / 1000;
-        currencies[1] = to.toString();
-      });
-    } catch (e) {
-      final snackBar = SnackBar(
-        content: Text("Wrong format"),
-        backgroundColor: Colors.redAccent,
-      );
-      Scaffold.of(context).showSnackBar(snackBar);
+    if (currencies[0] != '') {
+      try {
+        double from = double.parse(currencies[0]);
+        double rateFrom = _currencyRates.rates[fromCountry.currencyCode];
+        double rateTo = _currencyRates.rates[toCountry.currencyCode];
+        double to = from * (rateTo / rateFrom);
+        setState(() {
+          to = (to * 1000).ceil() / 1000;
+          currencies[1] = to.toString();
+        });
+      } catch (e) {
+        final snackBar = SnackBar(
+          content: Text("Wrong format"),
+          backgroundColor: Colors.redAccent,
+        );
+        Scaffold.of(context).showSnackBar(snackBar);
+      }
     }
   }
 
@@ -216,9 +218,10 @@ class _HomeState extends State<Home> {
                                 ))
                             : Text(
                                 "CLEAR",
-                                style: TextStyle(
+                                style: GoogleFonts.comfortaa(
+                                    color: Colors.white,
                                     fontSize: AppSizes.wUnit * 3.5,
-                                    color: Colors.white),
+                                    fontWeight: FontWeight.w900),
                               )),
                   ),
                 )
@@ -289,11 +292,13 @@ class _HomeState extends State<Home> {
               ),
               Text(
                 index == 0 ? fromCountry.currencyCode : toCountry.currencyCode,
-                style:
-                    TextStyle(fontSize: AppSizes.wUnit * 5, color: Colors.blue),
+                style: GoogleFonts.comfortaa(
+                    color: Colors.grey[600],
+                    fontSize: AppSizes.wUnit * 4.5,
+                    fontWeight: FontWeight.w600),
               ),
               Icon(Icons.keyboard_arrow_down,
-                  size: AppSizes.wUnit * 5, color: Colors.blue)
+                  size: AppSizes.wUnit * 5, color: Colors.grey[600])
             ],
           ),
         ),
@@ -320,12 +325,12 @@ class _HomeState extends State<Home> {
                       currencies[index] == ''
                           ? index == 0 ? '|' : ' '
                           : currencies[index],
-                      style: TextStyle(
-                          fontSize: AppSizes.wUnit * 5,
-                          fontWeight: FontWeight.bold,
+                      style: GoogleFonts.comfortaa(
                           color: index == 1
                               ? Colors.blue
-                              : Colors.black.withOpacity(0.6)),
+                              : Colors.black.withOpacity(0.6),
+                          fontSize: AppSizes.wUnit * 5,
+                          fontWeight: FontWeight.w800),
                       maxLines: 1,
                     )),
                 width: AppSizes.wUnit * 45,
@@ -358,7 +363,10 @@ class _HomeState extends State<Home> {
   }
 
   Column buildKeyBoard(BuildContext context) {
-    TextStyle buttonStyle = TextStyle(fontSize: AppSizes.wUnit * 5);
+    TextStyle buttonStyle = GoogleFonts.comfortaa(
+        color: Colors.grey[800],
+        fontSize: AppSizes.wUnit * 5,
+        fontWeight: FontWeight.w800);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -485,11 +493,8 @@ class _HomeState extends State<Home> {
                   setState(() {
                     currencies[0] =
                         currencies[0].substring(0, currencies[0].length - 1);
-                    if(currencies[0]!=''){
-                      convert(context);
-                    } else {
-                      clear();
-                    }
+                    convert(context);
+                    if (currencies[0] == '') clear();
                   });
                 }
               },

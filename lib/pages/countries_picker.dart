@@ -5,6 +5,7 @@ import 'package:currency_converter/models/data.dart';
 import 'package:currency_converter/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:scaledownbutton/scaledownbutton.dart';
 
 class CountriesPicker extends StatefulWidget {
@@ -58,8 +59,8 @@ class _CountriesPickerState extends State<CountriesPicker> {
                         width: AppSizes.wUnit * 2,
                       ),
                       Expanded(
-                          child: Text(country.name, overflow: TextOverflow.ellipsis,)),
-                      Text(country.currencyCode),
+                          child: Text(country.name, overflow: TextOverflow.ellipsis, style: GoogleFonts.comfortaa(color: Colors.grey[800], fontSize: AppSizes.wUnit*4, fontWeight: FontWeight.w700),)),
+                      Text(country.currencyCode, style: GoogleFonts.comfortaa(color: Colors.grey[600], fontSize: AppSizes.wUnit*3, fontWeight: FontWeight.w500),),
                     ],
                   ),
                 ),
@@ -91,7 +92,7 @@ class _CountriesPickerState extends State<CountriesPicker> {
             child: Text(
               character,
               style:
-                  TextStyle(color: Colors.grey, fontSize: AppSizes.wUnit * 4),
+              GoogleFonts.comfortaa(color: Colors.grey[600], fontSize: AppSizes.wUnit*4, fontWeight: FontWeight.w900),
             )),
         SizedBox(
           height: AppSizes.hUnit * 2,
@@ -157,12 +158,13 @@ class _CountriesPickerState extends State<CountriesPicker> {
                         child: Icon(
                           Icons.close,
                           size: AppSizes.wUnit * 6,
+                          color: Colors.grey[500],
                         )))
               ],
             ),
             Container(
               alignment: Alignment.center,
-              height: AppSizes.hUnit * 7,
+              height: AppSizes.hUnit * 8.5,
               width: AppSizes.wUnit * 88,
               decoration: BoxDecoration(
                   color: Colors.white,
@@ -175,23 +177,26 @@ class _CountriesPickerState extends State<CountriesPicker> {
                       offset: Offset(0, 1.5), // changes position of shadow
                     )
                   ]),
-              child: TextField(
-                  textAlign: TextAlign.left,
-                  onChanged: (text) {
-                    setState(() {
-                      searchText = text;
-                    });
-                  },
-                  decoration: new InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintStyle: TextStyle(color: Colors.grey),
-                      hintText: "Search country, currency")),
+              child: Center(
+                child: TextField(
+                    textAlign: TextAlign.left,
+                    onChanged: (text) {
+                      setState(() {
+                        searchText = text;
+                      });
+                    },
+                    style: GoogleFonts.comfortaa(color: Colors.grey[600], fontSize: AppSizes.wUnit*4, fontWeight: FontWeight.w700),
+                    decoration: new InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.only(
+                            left: 15, bottom: 11, top: 11, right: 15),
+                        hintStyle: GoogleFonts.comfortaa(color: Colors.grey[600], fontSize: AppSizes.wUnit*4, fontWeight: FontWeight.w700),
+                        hintText: "Search country, currency")),
+              ),
             ),
             SizedBox(
               height: AppSizes.hUnit * 3,
