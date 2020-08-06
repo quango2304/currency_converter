@@ -22,7 +22,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<String> currencies = ['', ''];
   CurrencyRates _currencyRates;
-  bool isPressConvert = false;
   SharedPreferences prefs;
 
   Country fromCountry = Country(
@@ -76,7 +75,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void convert() {
+  void convert(BuildContext context) {
     try {
       double from = double.parse(currencies[0]);
       double rateFrom = _currencyRates.rates[fromCountry.currencyCode];
@@ -87,7 +86,11 @@ class _HomeState extends State<Home> {
         currencies[1] = to.toString();
       });
     } catch (e) {
-      print(e);
+      final snackBar = SnackBar(
+        content: Text("Wrong format"),
+        backgroundColor: Colors.redAccent,
+      );
+      Scaffold.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -113,7 +116,7 @@ class _HomeState extends State<Home> {
                       clipper: CustomClipPath(),
                     ),
                     Spacer(),
-                    buildKeyBoard()
+                    buildKeyBoard(context)
                   ],
                 ),
                 Container(
@@ -185,8 +188,7 @@ class _HomeState extends State<Home> {
                   child: ScaleDownButton(
                     scale: 0.05,
                     onTap: () {
-                      isPressConvert = true;
-                      convert();
+                      clear();
                     },
                     child: Container(
                         alignment: Alignment.center,
@@ -213,7 +215,7 @@ class _HomeState extends State<Home> {
                                   backgroundColor: Colors.white,
                                 ))
                             : Text(
-                                "CONVERT",
+                                "CLEAR",
                                 style: TextStyle(
                                     fontSize: AppSizes.wUnit * 3.5,
                                     color: Colors.white),
@@ -240,17 +242,17 @@ class _HomeState extends State<Home> {
               isNavigated = true;
               Country result = await Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => CountriesPicker()));
-              saveCountries(index, result);
               if (result != null) {
+                saveCountries(index, result);
                 if (index == 0) {
                   setState(() {
                     fromCountry = result;
-                    convert();
+                    convert(context);
                   });
                 } else {
                   setState(() {
                     toCountry = result;
-                    convert();
+                    convert(context);
                   });
                 }
               }
@@ -281,7 +283,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Container(
-                width: AppSizes.wUnit * 4,
+                width: AppSizes.wUnit * 3.5,
                 height: AppSizes.wUnit * 5,
                 color: Colors.transparent,
               ),
@@ -341,22 +343,21 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void pressKey(String key) {
-    if (isPressConvert == true) {
-      setState(() {
-        currencies[0] = '';
-        currencies[1] = '';
-        currencies[0] += key;
-        isPressConvert = false;
-      });
-    } else {
-      setState(() {
-        currencies[0] += key;
-      });
-    }
+  void pressKey(String key, BuildContext context) {
+    setState(() {
+      currencies[0] += key;
+    });
+    convert(context);
   }
 
-  Column buildKeyBoard() {
+  void clear() {
+    setState(() {
+      currencies[0] = '';
+      currencies[1] = '';
+    });
+  }
+
+  Column buildKeyBoard(BuildContext context) {
     TextStyle buttonStyle = TextStyle(fontSize: AppSizes.wUnit * 5);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -366,7 +367,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             KeyboardButton(
               ontap: () {
-                pressKey('7');
+                pressKey('7', context);
               },
               child: Text(
                 '7',
@@ -375,7 +376,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                pressKey('8');
+                pressKey('8', context);
               },
               child: Text(
                 '8',
@@ -384,7 +385,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                pressKey('9');
+                pressKey('9', context);
               },
               child: Text(
                 '9',
@@ -398,7 +399,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             KeyboardButton(
               ontap: () {
-                pressKey('4');
+                pressKey('4', context);
               },
               child: Text(
                 '4',
@@ -407,7 +408,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                pressKey('5');
+                pressKey('5', context);
               },
               child: Text(
                 '5',
@@ -416,7 +417,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                pressKey('6');
+                pressKey('6', context);
               },
               child: Text(
                 '6',
@@ -430,7 +431,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             KeyboardButton(
               ontap: () {
-                pressKey('1');
+                pressKey('1', context);
               },
               child: Text(
                 '1',
@@ -439,7 +440,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                pressKey('2');
+                pressKey('2', context);
               },
               child: Text(
                 '2',
@@ -448,7 +449,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                pressKey('3');
+                pressKey('3', context);
               },
               child: Text(
                 '3',
@@ -462,7 +463,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             KeyboardButton(
               ontap: () {
-                pressKey('0');
+                pressKey('0', context);
               },
               child: Text(
                 '0',
@@ -471,7 +472,7 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                pressKey('.');
+                pressKey('.', context);
               },
               child: Text(
                 '.',
@@ -484,14 +485,16 @@ class _HomeState extends State<Home> {
                   setState(() {
                     currencies[0] =
                         currencies[0].substring(0, currencies[0].length - 1);
+                    if(currencies[0]!=''){
+                      convert(context);
+                    } else {
+                      clear();
+                    }
                   });
                 }
               },
               onLongPress: () {
-                setState(() {
-                  currencies[0] = '';
-                  currencies[1] = '';
-                });
+                clear();
               },
               child: Icon(
                 Icons.backspace,
