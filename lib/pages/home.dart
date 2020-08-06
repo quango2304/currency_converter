@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:clipboard_manager/clipboard_manager.dart';
@@ -11,6 +12,7 @@ import 'package:currency_converter/widgets/keyboard/key.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scaledownbutton/scaledownbutton.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -21,6 +23,8 @@ class _HomeState extends State<Home> {
   List<String> currencies = ['', ''];
   CurrencyRates _currencyRates;
   bool isPressConvert = false;
+  SharedPreferences prefs;
+
   Country fromCountry = Country(
     isoCode: "US",
     currencyCode: "USD",
@@ -40,7 +44,28 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    loadCountries();
     loadCurrency();
+  }
+
+  Future<void> loadCountries() async {
+    prefs = await SharedPreferences.getInstance();
+    String fromCountryCache = prefs.getString('fromCountry');
+    String toCountryCache = prefs.getString('toCountry');
+    setState(() {
+      if (fromCountryCache != null) {
+        fromCountry = Country.fromRawJson(fromCountryCache);
+
+      }
+      if (toCountryCache != null) {
+        toCountry = Country.fromRawJson(toCountryCache);
+      }
+    });
+  }
+
+  void saveCountries(int index, Country country) {
+    prefs.setString(index == 0 ? 'fromCountry' : 'toCountry',
+        json.encode(country.toJson()));
   }
 
   Future<void> loadCurrency() async {
@@ -56,12 +81,12 @@ class _HomeState extends State<Home> {
       double from = double.parse(currencies[0]);
       double rateFrom = _currencyRates.rates[fromCountry.currencyCode];
       double rateTo = _currencyRates.rates[toCountry.currencyCode];
-      double to = from*(rateTo/rateFrom);
+      double to = from * (rateTo / rateFrom);
       setState(() {
         to = (to * 1000).ceil() / 1000;
         currencies[1] = to.toString();
       });
-    } catch (e){
+    } catch (e) {
       print(e);
     }
   }
@@ -215,14 +240,17 @@ class _HomeState extends State<Home> {
               isNavigated = true;
               Country result = await Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => CountriesPicker()));
+              saveCountries(index, result);
               if (result != null) {
                 if (index == 0) {
                   setState(() {
                     fromCountry = result;
+                    convert();
                   });
                 } else {
                   setState(() {
                     toCountry = result;
+                    convert();
                   });
                 }
               }
@@ -314,7 +342,7 @@ class _HomeState extends State<Home> {
   }
 
   void pressKey(String key) {
-    if(isPressConvert == true) {
+    if (isPressConvert == true) {
       setState(() {
         currencies[0] = '';
         currencies[1] = '';
