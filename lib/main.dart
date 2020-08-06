@@ -15,13 +15,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await loadJson();
-    });
-  }
-  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constrain) {

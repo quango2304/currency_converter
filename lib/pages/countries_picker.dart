@@ -1,6 +1,8 @@
 import 'package:currency_converter/models/app_sizes.dart';
+import 'package:currency_converter/models/countries.dart';
 import 'package:currency_converter/models/country.dart';
 import 'package:currency_converter/models/data.dart';
+import 'package:currency_converter/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scaledownbutton/scaledownbutton.dart';
@@ -15,52 +17,63 @@ class _CountriesPickerState extends State<CountriesPicker> {
 
   Widget buildCountryItem(Country country, int index) {
     return Container(
-      padding: EdgeInsets.only(
-          left: AppSizes.wUnit * 10, right: AppSizes.wUnit * 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          index != 0
-              ? Container(
-                  height: 2,
-                  color: Colors.grey.withOpacity(0.2),
-                )
-              : Container(
-                  height: 0,
-                  color: Colors.grey,
-                ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: AppSizes.hUnit * 2),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.asset(
-                      'icons/flags/png/${country.code.toLowerCase()}.png',
-                      package: 'country_icons',
-                      fit: BoxFit.fitWidth,
-                      width: AppSizes.wUnit * 10,
+      color: Colors.white,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.pop(context, country);
+          },
+          child: Container(
+            padding: EdgeInsets.only(
+                left: AppSizes.wUnit * 10, right: AppSizes.wUnit * 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                index != 0
+                    ? Container(
+                        height: 2,
+                        color: Colors.grey.withOpacity(0.2),
+                      )
+                    : Container(
+                        height: 0,
+                        color: Colors.grey,
+                      ),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: AppSizes.hUnit * 2),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.asset(
+                            'icons/flags/png/${country.isoCode.toLowerCase()}.png',
+                            package: 'country_icons',
+                            fit: BoxFit.fitWidth,
+                            width: AppSizes.wUnit * 10,
+                          ),
+                        ),
+                        SizedBox(
+                          width: AppSizes.wUnit * 2,
+                        ),
+                        Text(country.name)
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    width: AppSizes.wUnit * 2,
-                  ),
-                  Text(country.name)
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget buildCharacterCountry(String character, List<Country> localCountries) {
     List<Country> filteredCountries = localCountries
-        .where((country) => country.name.substring(0, 1) == character)
+        .where((country) => AppUtils.toNormal(country.name.substring(0, 1) )== character)
         .toList();
     if (filteredCountries.length == 0)
       return SizedBox(
@@ -106,12 +119,12 @@ class _CountriesPickerState extends State<CountriesPicker> {
     double statusBarHeight = MediaQuery.of(context).padding.top;
     List<Country> localCountries;
     if (searchText != '' && searchText != null) {
-      localCountries = countries
+      localCountries = countryList
           .where((country) =>
-              country.name.toLowerCase().contains(searchText.toLowerCase()))
+              country.name.replaceAll(' ', '').toLowerCase().contains(searchText.replaceAll(' ', '').toLowerCase()))
           .toList();
     } else {
-      localCountries = countries;
+      localCountries = countryList;
     }
     return Scaffold(
       backgroundColor: Colors.white,

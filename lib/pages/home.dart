@@ -1,6 +1,8 @@
 import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:currency_converter/models/app_sizes.dart';
+import 'package:currency_converter/models/country.dart';
 import 'package:currency_converter/pages/countries_picker.dart';
+import 'package:currency_converter/util.dart';
 import 'package:currency_converter/widgets/clipper.dart';
 import 'package:currency_converter/widgets/keyboard/key.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,7 +15,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<String> currencies = ['',''];
+  List<String> currencies = ['', ''];
+  Country fromCountry = Country(
+    isoCode: "US",
+    currencyCode: "USD",
+    currencyName: "United States dollar",
+    name: "United States of America",
+    iso3Code: "USA",
+  );
+  Country toCountry = Country(
+    isoCode: "VN",
+    currencyCode: "VND",
+    currencyName: "Vietnamese đồng",
+    name: "Viet Nam",
+    iso3Code: "VNM",
+  );
   bool isNavigated = false;
 
   @override
@@ -45,7 +61,8 @@ class _HomeState extends State<Home> {
                   margin: EdgeInsets.only(top: AppSizes.hUnit * 15),
                   width: AppSizes.wUnit * 90,
                   height: AppSizes.hUnit * 30,
-                  padding: EdgeInsets.symmetric(horizontal: AppSizes.wUnit * 3.5),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: AppSizes.wUnit * 3.5),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
@@ -79,7 +96,9 @@ class _HomeState extends State<Home> {
                                 color: Colors.redAccent,
                               ),
                             ),
-                            SizedBox(width: AppSizes.wUnit * 38.7,),
+                            SizedBox(
+                              width: AppSizes.wUnit * 38.7,
+                            ),
                             Icon(
                               Icons.arrow_drop_down,
                               size: AppSizes.hUnit * 4,
@@ -109,13 +128,15 @@ class _HomeState extends State<Home> {
                               color: Colors.blue.withOpacity(0.2),
                               spreadRadius: 5,
                               blurRadius: 5,
-                              offset: Offset(0, 3), // changes position of shadow
+                              offset:
+                                  Offset(0, 3), // changes position of shadow
                             )
                           ]),
                       child: Text(
                         "CONVERT",
                         style: TextStyle(
-                            fontSize: AppSizes.wUnit * 3.5, color: Colors.white),
+                            fontSize: AppSizes.wUnit * 3.5,
+                            color: Colors.white),
                       ),
                     ),
                   ),
@@ -127,6 +148,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   Row buildCurrencyRow(int index, BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -135,10 +157,19 @@ class _HomeState extends State<Home> {
         ScaleDownButton(
           scale: 0.05,
           onTap: () async {
-            if(!isNavigated) {
+            if (!isNavigated) {
               isNavigated = true;
-              bool result = await Navigator.of(context).push(
+              Country result = await Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => CountriesPicker()));
+              if(index==0) {
+                setState(() {
+                  fromCountry = result;
+                });
+              } else {
+                setState(() {
+                  toCountry = result;
+                });
+              }
               isNavigated = false;
             }
           },
@@ -158,7 +189,7 @@ class _HomeState extends State<Home> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: Image.asset(
-                    'icons/flags/png/az.png',
+                    'icons/flags/png/${index == 0 ? fromCountry.isoCode.toLowerCase() : toCountry.isoCode.toLowerCase()}.png',
                     package: 'country_icons',
                     fit: BoxFit.fitWidth,
                     width: AppSizes.wUnit * 10,
@@ -171,9 +202,9 @@ class _HomeState extends State<Home> {
                 color: Colors.transparent,
               ),
               Text(
-                'USD',
+                index == 0 ? fromCountry.currencyCode: toCountry.currencyCode,
                 style:
-                TextStyle(fontSize: AppSizes.wUnit * 5, color: Colors.blue),
+                    TextStyle(fontSize: AppSizes.wUnit * 5, color: Colors.blue),
               ),
               Icon(Icons.keyboard_arrow_down,
                   size: AppSizes.wUnit * 5, color: Colors.blue)
@@ -185,7 +216,8 @@ class _HomeState extends State<Home> {
           child: Material(
             child: InkWell(
               onTap: () {
-                ClipboardManager.copyToClipBoard(currencies[index]).then((result) {
+                ClipboardManager.copyToClipBoard(currencies[index])
+                    .then((result) {
                   final snackBar = SnackBar(
                     content: Text("Copied '${currencies[index]}' to Clipboard"),
                   );
@@ -199,8 +231,15 @@ class _HomeState extends State<Home> {
                 child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      currencies[index] == '' ? ' ' : currencies[index],
-                      style: TextStyle(fontSize: AppSizes.wUnit * 5, fontWeight: FontWeight.bold, color: index==1?Colors.blue:Colors.black.withOpacity(0.6)),
+                      currencies[index] == ''
+                          ? index == 0 ? '|' : ' '
+                          : currencies[index],
+                      style: TextStyle(
+                          fontSize: AppSizes.wUnit * 5,
+                          fontWeight: FontWeight.bold,
+                          color: index == 1
+                              ? Colors.blue
+                              : Colors.black.withOpacity(0.6)),
                       maxLines: 1,
                     )),
                 width: AppSizes.wUnit * 45,
@@ -229,7 +268,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='7';
+                  currencies[0] += '7';
                 });
               },
               child: Text(
@@ -240,7 +279,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='8';
+                  currencies[0] += '8';
                 });
               },
               child: Text(
@@ -251,7 +290,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='9';
+                  currencies[0] += '9';
                 });
               },
               child: Text(
@@ -267,7 +306,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='4';
+                  currencies[0] += '4';
                 });
               },
               child: Text(
@@ -278,7 +317,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='5';
+                  currencies[0] += '5';
                 });
               },
               child: Text(
@@ -289,7 +328,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='6';
+                  currencies[0] += '6';
                 });
               },
               child: Text(
@@ -305,7 +344,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='1';
+                  currencies[0] += '1';
                 });
               },
               child: Text(
@@ -316,7 +355,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='2';
+                  currencies[0] += '2';
                 });
               },
               child: Text(
@@ -327,7 +366,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='3';
+                  currencies[0] += '3';
                 });
               },
               child: Text(
@@ -343,7 +382,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='0';
+                  currencies[0] += '0';
                 });
               },
               child: Text(
@@ -354,7 +393,7 @@ class _HomeState extends State<Home> {
             KeyboardButton(
               ontap: () {
                 setState(() {
-                  currencies[0]+='.';
+                  currencies[0] += '.';
                 });
               },
               child: Text(
@@ -364,9 +403,10 @@ class _HomeState extends State<Home> {
             ),
             KeyboardButton(
               ontap: () {
-                if(currencies[0].length>0) {
+                if (currencies[0].length > 0) {
                   setState(() {
-                    currencies[0] = currencies[0].substring(0, currencies[0].length-1);
+                    currencies[0] =
+                        currencies[0].substring(0, currencies[0].length - 1);
                   });
                 }
               },

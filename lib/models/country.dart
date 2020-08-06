@@ -1,25 +1,16 @@
-import 'dart:convert';
-
 class Country {
-  Country({
-    this.name,
-    this.code,
-  });
-
   final String name;
-  final String code;
+  final String isoCode;
+  final String iso3Code;
+  final String currencyCode;
+  final String currencyName;
+  Country({this.isoCode, this.iso3Code, this.currencyCode, this.currencyName, this.name});
 
-  factory Country.fromRawJson(String str) => Country.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
-  factory Country.fromJson(Map<String, dynamic> json) => Country(
-    name: json["name"] == null ? null : json["name"],
-    code: json["code"] == null ? null : json["code"],
+  factory Country.fromMap(Map<String, String> map) => Country(
+    name: map['name'],
+    isoCode: map['isoCode'],
+    iso3Code: map['iso3Code'],
+    currencyCode: map['currencyCode'],
+    currencyName: map['currencyName'],
   );
-
-  Map<String, dynamic> toJson() => {
-    "name": name == null ? null : name,
-    "code": code == null ? null : code,
-  };
 }
