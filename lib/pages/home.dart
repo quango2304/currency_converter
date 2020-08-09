@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:clipboard_manager/clipboard_manager.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:currency_converter/models/app_sizes.dart';
 import 'package:currency_converter/models/country.dart';
 import 'package:currency_converter/models/currency_rates.dart';
@@ -244,7 +244,7 @@ class _HomeState extends State<Home> {
             if (!isNavigated) {
               isNavigated = true;
               Country result = await Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (context) => CountriesPicker()));
+                  MaterialPageRoute(builder: (context) => CountriesPicker()));
               if (result != null) {
                 saveCountries(index, result);
                 if (index == 0) {
@@ -307,7 +307,7 @@ class _HomeState extends State<Home> {
           child: Material(
             child: InkWell(
               onTap: () {
-                ClipboardManager.copyToClipBoard(currencies[index])
+                FlutterClipboard.copy(currencies[index])
                     .then((result) {
                   final snackBar = SnackBar(
                     content: Text("Copied '${currencies[index]}' to Clipboard"),

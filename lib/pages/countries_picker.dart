@@ -151,7 +151,9 @@ class _CountriesPickerState extends State<CountriesPicker> {
                       Navigator.of(context).pop();
                     },
                     child: Container(
+                      color: Colors.transparent,
                         padding: EdgeInsets.only(
+                          left: AppSizes.wUnit * 6,
                             right: AppSizes.wUnit * 6,
                             top: AppSizes.wUnit * 3,
                             bottom: AppSizes.wUnit * 3),

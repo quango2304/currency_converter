@@ -25,7 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   scaledownbutton: ^0.0.2
   country_icons: ^1.1.1
-  clipboard_manager: ^0.0.4
+  clipboard: ^0.1.2+8
   dio: ^3.0.9
   shared_preferences: ^0.5.8
   google_fonts: ^1.1.0
