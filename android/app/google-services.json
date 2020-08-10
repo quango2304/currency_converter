@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "349977611684",
+    "firebase_url": "https://store-apps-49926.firebaseio.com",
+    "project_id": "store-apps-49926",
+    "storage_bucket": "store-apps-49926.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349977611684:android:c0702ee042e57ad3d64531",
+        "android_client_info": {
+          "package_name": "com.quanngovan98.currency_converter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "349977611684-fkt3d45s69irve84rrftv475thr6p08r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN6QTa1RMVjSTT_ilV0QimI8ehsf8AUXo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "349977611684-fkt3d45s69irve84rrftv475thr6p08r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

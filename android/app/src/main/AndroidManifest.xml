@@ -9,6 +9,9 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Currency Converter"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1976591430265349~5322366523"/>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"

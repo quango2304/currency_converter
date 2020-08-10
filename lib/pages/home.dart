@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:currency_converter/models/app_sizes.dart';
@@ -40,7 +39,6 @@ class _HomeState extends State<Home> {
     iso3Code: "VNM",
   );
   bool isNavigated = false;
-
   @override
   void initState() {
     super.initState();
